@@ -22,6 +22,9 @@ export {
     # Define the record type that will contain the data to log.
     type Info: record {
         ts: time                &log;
+        src: string             &log &optional;
+        dst: string             &log &optional;
+        vlan: count             &log &optional;
         appid: int              &log;
         length: int             &log;
         gocbRef: string         &log;
@@ -59,11 +62,17 @@ event zeek_init() &priority=20
 }
 
 # event defined in goose.evt.
-event goose::goose_packet(appid: int, length: int, gocbRef: string, timeAllowedtoLive:int, dataSet: string, t: time, stNum: int, sqNum: int, simulation: bool, confRev: int, ndsCom: bool, numDatSetEntries: int)
+event goose::goose_packet(pkt: raw_pkt_hdr, appid: int, length: int, gocbRef: string, timeAllowedtoLive:int, dataSet: string, t: time, stNum: int, sqNum: int, simulation: bool, confRev: int, ndsCom: bool, numDatSetEntries: int)
 {
 #    print "Detected a goose packet.";
 
     local rec: goose::Info = [$ts=network_time(), $appid=appid, $length=length, $gocbRef=gocbRef, $timeAllowedtoLive=timeAllowedtoLive, $dataSet=dataSet, $t=t, $stNum=stNum, $sqNum=sqNum, $simulation=simulation, $confRev=confRev, $ndsCom=ndsCom, $numDatSetEntries=numDatSetEntries];
+
+    if ( pkt?$l2 ) {
+        if ( pkt$l2?$src )  rec$src  = pkt$l2$src;
+        if ( pkt$l2?$dst )  rec$dst  = pkt$l2$dst;
+        if ( pkt$l2?$vlan ) rec$vlan = pkt$l2$vlan;
+    }
 
     Log::write(goose::LOG, rec);
 }
