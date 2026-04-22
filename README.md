@@ -54,7 +54,7 @@ The software was developed on behalf of the [BSI](https://www.bsi.bund.de) \(Fed
 
 ## Licenses
 
-Copyright (c) 2023-2025 by DINA-Community. [See License](/LICENSE)
+Copyright (c) 2023-2026 by DINA-Community. [See License](/LICENSE)
 
 ### Third party licenses
 
